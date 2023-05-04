@@ -8,23 +8,20 @@ std::string encrypt_caesar (std::string str, int num)
     constexpr int alphaStartBig = 65;
     constexpr int alphaStartLittle = 97;
     int offset = num % numAlphabet;
-    int len = str.length();
-    std::string strRet (len, ' ');
-    for (int i = 0; i < len; i++) {
+    for (uint i = 0; i < str.length (); i++) {
         int alphaStart;
         if (str[i] >= 'A' && str[i] <= 'Z')
             alphaStart = alphaStartBig;
         else if (str[i] >= 'a' && str[i] <= 'z')
             alphaStart = alphaStartLittle;
         else {
-            strRet[i] = str[i];
             continue;
         }
         str[i] -= alphaStart;
-        strRet[i] = ((str[i] + offset) >= numAlphabet) ? (str[i] + offset) % numAlphabet : str[i] + offset;
-        strRet[i] += alphaStart;
+        str[i] = ((str[i] + offset) >= numAlphabet) ? (str[i] + offset) % numAlphabet : str[i] + offset;
+        str[i] += alphaStart;
     }
-    return strRet;
+    return str;
 }
 
 std::string decrypt_caesar (std::string str, int num)
