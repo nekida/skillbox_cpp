@@ -46,7 +46,7 @@ int main ()
     std::string tmp;
     std::getline (std::cin, tmp);
 
-    std::cout << "Введите фразу для декодирования шифром Цезаря:" << std::endl;
+    std::cout << "Введите фразу для декодирования шифра Цезаря:" << std::endl;
     std::getline (std::cin, strDecode);
     std::cout << "Введите значение для сдвига:" << std::endl;
     std::cin >> offsetDecode;
