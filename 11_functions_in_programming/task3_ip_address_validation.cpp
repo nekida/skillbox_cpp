@@ -42,8 +42,9 @@ bool check_part (std::string address, unsigned part)
     if (len == 2 && str[0] == '0')
         return false;
     else if (len == 3) {
-        if ((str[0] == '0') || (str[0] == '0' && str[1] == '0') ||
-                (str[0] >= '2' && str[1] >= '5' && str[2] > '5'))
+        if ((str[0] == '0') || (str[0] == '0' && str[1] == '0') || str[0] > '2' ||
+                (str[0] > '2' && str[1] > '5') ||
+                        (str[0] >= '2' && str[1] >= '5' && str[2] > '5'))
             return false;
     }
     return true;
