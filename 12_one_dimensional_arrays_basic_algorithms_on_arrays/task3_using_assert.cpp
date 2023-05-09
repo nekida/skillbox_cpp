@@ -3,8 +3,8 @@
 
 float travelTime (float distance, float speed)
 {
-    assert (speed < 0.0);
-    return distance * speed;
+    assert (speed <= 0.0);
+    return distance / speed;
 }
 
 int main ()
