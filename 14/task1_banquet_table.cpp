@@ -1,6 +1,3 @@
-#include <iostream>
-#include <string>
-
 int main ()
 {
     int cutlery[2][6] = {
