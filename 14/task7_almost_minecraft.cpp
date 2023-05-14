@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 
 static constexpr int sizeField = 5;
 
