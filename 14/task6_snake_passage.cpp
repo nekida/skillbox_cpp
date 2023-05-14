@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 
 void printMatrix (int matrix[][5])
 {
