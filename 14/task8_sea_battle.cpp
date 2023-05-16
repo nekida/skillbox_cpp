@@ -84,7 +84,7 @@ void fillingShipSome (char field[][sizeField], int numShip, int counter)
             continue;
         if (!checkCorrectValue (x2, y2)) 
             continue;
-        if (x1 != x2 && y1 != y2 || std::abs(x1 - x2) + 1 != numShip && std::abs(y1 - y2) + 1 != numShip) {
+        if (((x1 != x2) && (y1 != y2)) || (((std::abs(x1 - x2) + 1) != numShip) && ((std::abs(y1 - y2) + 1) != numShip))) {
             std::cout << "incorrect values. repeat" << std::endl;
             continue;
         }
@@ -143,14 +143,17 @@ void initField (char field[][sizeField])
             field[i][j] = '_';
 }
 
-bool attack (char field[][sizeField], int x, int y)
+bool attack (char youField[][sizeField], char enemyField[][sizeField], int x, int y)
 {
-    if (field[x][y] == 'O') {
-        field[x][y] = 'X';
-        std::cout << "You hint!";
+    if (enemyField[x][y] == 'O') {
+        enemyField[x][y] = 'X';
+        youField[x][y] = 'X';
+        std::cout << "You hint!" << std::endl;
         return true;
     } else {
-        std::cout << "You past!";
+        enemyField[x][y] = '*';
+        youField[x][y] = '*';
+        std::cout << "You past!" << std::endl;
         return false;
     }
 }
@@ -165,6 +168,7 @@ int main ()
 
     std::cout << "Player 1 place ships" << std::endl;
     setShips(player1Ships);
+    std::cout << std::endl;
     std::cout << "Player 2 place ships" << std::endl;
     setShips(player2Ships);
 
@@ -176,37 +180,35 @@ int main ()
         bool isHint = true;
 
         while (isHint) {
+            std::cout << std::endl;
             std::cout << "Player 1 ships" << std::endl;
             printFields(player1Ships);
             std::cout << "Player 1 to attack (x, y):" << std::endl;
             printFields(player1Attack);
             std::cin >> x >> y;
-            if (attack(player1Attack, x, y))
+            if (attack(player1Attack, player2Ships, x, y)) {
                 cntAllShips2--;
-            else
+                if (cntAllShips2 == 0)
+                    break;
+            } else
                 isHint = false;
-            std::cout << "Player 1. You attacks:" << std::endl;
-            printFields(player1Attack);
-            std::cout << "Player 1. You ships:" << std::endl;
-            printFields(player1Ships);
         }
 
         isHint = true;
 
         while (isHint) {
+            std::cout << std::endl;
             std::cout << "Player 2 ships" << std::endl;
-            setShips(player2Ships);
-            std::cout << "Player 2 to attack (x, y):" << std::endl;
-            setShips(player2Attack);
-            std::cin >> x >> y;
-            if (attack(player2Attack, x, y))
-                cntAllShips1--;
-            else
-                isHint = false;
-            std::cout << "Player 2. You attacks:" << std::endl;
-            printFields(player2Attack);
-            std::cout << "Player 2. You ships:" << std::endl;
             printFields(player2Ships);
+            std::cout << "Player 2 to attack (x, y):" << std::endl;
+            printFields(player2Attack);
+            std::cin >> x >> y;
+            if (attack(player2Attack, player1Ships, x, y)) {
+                cntAllShips1--;
+                if (cntAllShips1 == 0)
+                    break;
+            } else
+                isHint = false;
         }
     }
 
