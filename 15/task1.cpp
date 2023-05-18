@@ -3,23 +3,21 @@
 
 void printTwoIndexes (std::vector<int>& v)
 {
-    int iOne, iTwo, sum;
-    iOne = sum = 0;
-    iTwo = v.size() - 1;
-    for (int i = 0; i < v.size(); ++i)
-        sum += v[i];
-    for (int i = 0, j = v.size() - 1; i != j; ) {
-        if (sum - v[i] > sum) {
-            sum -= v[i];
-            ++i;
-            iOne = i;
-        }
-        if (sum - v[j] > sum) {
-            sum -= v[j];
-            --j;
-            iTwo = j;
+    int iOne, iTwo, sum, prevSum, size;
+    prevSum = 0;
+    size = v.size();
+    for (int i = 0; i < size; ++i) {
+        sum = v[i];
+        for (int j = 1 + i; j < size; ++j) {
+            sum += v[j];
+            if (sum > prevSum) {
+                prevSum = sum;
+                iOne = i;
+                iTwo = j;
+            }
         }
     }
+    std::cout << "Result: " << iOne << ' ' << iTwo << std::endl;
 }
 
 int main ()
