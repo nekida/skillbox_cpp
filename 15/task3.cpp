@@ -24,7 +24,7 @@ int main ()
         std::cin >> val;
         if (val == -1) {
             if (v.size() < 5)
-                std::cout << "No 5 items" << std::endl;
+                std::cerr << "No 5 items" << std::endl;
             else {
                 sorting (v);
                 std::cout << "Result: " << v[4] << std::endl;
