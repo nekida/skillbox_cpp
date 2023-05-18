@@ -12,7 +12,7 @@ void printTwoNum (std::vector<int>& v, int sum)
             }
         }
     }
-    std::cout << "No pair of numbers" << std::endl;
+    std::cerr << "No pair of numbers" << std::endl;
 }
 
 int main ()
