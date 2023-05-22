@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cmath>
+#include <string>
 
 int main ()
 {
@@ -9,7 +9,8 @@ int main ()
     std::cout << "Enter the fractional part of the number" << std::endl;
     std::cin >> fract;
 
-    std::cout << "Result: " << std::stod (integer) + std::stod (fract) / std::pow (10, fract.size ()) << std::endl;
+    std::string result = integer + '.' + fract;
+    std::cout << "Result: " << std::stod (result) << std::endl;
 
     return 0;
 }
