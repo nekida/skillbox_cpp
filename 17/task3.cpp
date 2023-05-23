@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstring>
 
-bool findStrInStr (char *str1, char *str2)
+bool findStrInStr (const char *str1, const char *str2)
 {
     if (strstr (str1, str2) == NULL)
         return false;
