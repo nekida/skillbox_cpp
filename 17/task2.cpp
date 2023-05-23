@@ -16,10 +16,8 @@ int main ()
     for (int i = 0; i < 10; i++)
         std::cin >> a[i];
     reverseArray (a);
-    for (int i = 0; i < 10; i++) {
-        std::cout << a[i];
-        std::cout << ' ';
-    }
+    for (int i = 0; i < 10; i++)
+        std::cout << a[i] << ' ';
     std::cout << std::endl;
 
     return 0;
