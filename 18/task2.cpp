@@ -12,7 +12,7 @@ int getNumJumpVariants (int step)
 
 int main ()
 {
-    std::cout << "Input num  step" << std::endl;
+    std::cout << "Input num step" << std::endl;
     int n;
     std::cin >> n;
     std::cout << getNumJumpVariants (n) << std::endl;
