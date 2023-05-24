@@ -12,7 +12,7 @@ int main ()
 {
     std::cout << "Input long long num" << std::endl;
     long long n;
-    int k;
+    int k = 0;
     std::cin >> n;
     evendigits (n, k);
     std::cout << k << std::endl;
