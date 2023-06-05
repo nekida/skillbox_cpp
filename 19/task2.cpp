@@ -14,7 +14,7 @@ int main ()
         std::cout << "Error open file" << std::endl;
         return 0;
     }
-    char buf[100];
+    char buf[10];
     while (!file.eof()) {
         file.read(buf, sizeof (buf));
         auto size = file.gcount();
