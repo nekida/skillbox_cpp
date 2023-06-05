@@ -12,12 +12,12 @@ int getNumQuestions (int offset)
     if (offset > 0)
         --offset;
     for (int i = offset; i < 13; i++)
-        if (isUse[i] == false) {
+        if (!isUse[i]) {
             isUse[i] = true;
             return i;
         }
     for (int i = 0; i < offset; i++)
-        if (isUse[i] == false) {
+        if (!isUse[i]) {
             isUse[i] = true;
             return i;
         }
@@ -65,7 +65,7 @@ int main ()
         offset += inputOffset;
         int num = getNumQuestions (offset);
         std::string question = getStr (pathQuestions, num);
-        if (question == "") {
+        if (question.empty ()) {
             std::cout << "Error read!" << std::endl;
             return 0;
         }
