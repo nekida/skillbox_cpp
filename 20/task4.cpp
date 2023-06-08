@@ -67,16 +67,6 @@ void addBanknotes (int freeSpiceATM)
     bankFileOut.close ();
 }
 
-int getNumBanknote (int sum, int valBanknote)
-{
-    int num = 0;
-    while (sum - valBanknote >= 0) {
-        num++;
-        sum -= valBanknote;
-    }
-    return num;
-}
-
 int numAvailability (std::vector<int>& v, int valBanknote)
 {
     int cnt = 0;
