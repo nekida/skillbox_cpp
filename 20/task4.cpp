@@ -70,21 +70,21 @@ void addBanknotes (int freeSpiceATM)
 int getNumBanknote (int sum, int valBanknote)
 {
     int num = 0;
-    while (sum - valBanknote > 0) {
+    while (sum - valBanknote >= 0) {
         num++;
         sum -= valBanknote;
     }
     return num;
 }
 
-bool checkAvailability (std::vector<int>& v, int valBanknote, int numBanknote)
+int numAvailability (std::vector<int>& v, int valBanknote)
 {
-    int curNum = 0;
+    int cnt = 0;
     for (size_t i = 0; i < v.size(); i++) {
         if (v[i] == valBanknote)
-            curNum++;
+            cnt++;
     }
-    return curNum >= numBanknote;
+    return cnt;
 }
 
 void giveNumOfBanknotes (std::vector<int>& v, int valBanknote, int numBanknote)
@@ -117,31 +117,88 @@ void giveBanknotes (int freeSpiceATM)
     bankFileIn.read (reinterpret_cast<char*>(bankArray.data()), sizeof(int) * bankArray.size());
     bankFileIn.close ();
 
-    int num5000Banknote = getNumBanknote(sum, 5000);
-    int num2000Banknote = getNumBanknote(sum, 2000);
-    int num1000Banknote = getNumBanknote(sum, 1000);
-    int num500Banknote = getNumBanknote(sum, 500);
-    int num100Banknote = getNumBanknote(sum, 100);
+    int needNum5000Banknote = sum / 5000;
+    sum %= 5000;
+    int needNum2000Banknote = sum / 2000;
+    sum %= 2000;
+    int needNum1000Banknote = sum / 1000;
+    sum %= 1000;
+    int needNum500Banknote = sum / 500;
+    sum %= 500;
+    int needNum100Banknote = sum / 100;
+
+    int availNum5000Banknote = numAvailability (bankArray, 5000);
+    int availNum2000Banknote = numAvailability (bankArray, 2000);
+    int availNum1000Banknote = numAvailability (bankArray, 1000);
+    int availNum500Banknote = numAvailability (bankArray, 500);
+    int availNum100Banknote = numAvailability (bankArray, 100);
+
+    int resNum5000Banknote = 0;
+    if (availNum5000Banknote >= needNum5000Banknote) {
+        resNum5000Banknote = needNum5000Banknote;
+    } else {
+        resNum5000Banknote = availNum5000Banknote;
+        int delta = needNum5000Banknote - availNum5000Banknote;
+        while (delta) {
+            needNum2000Banknote += 2;
+            needNum1000Banknote += 1;
+            --delta;
+        }
+    }
+    int resNum2000Banknote = 0;
+    if (availNum2000Banknote >= needNum2000Banknote) {
+        resNum2000Banknote = needNum2000Banknote;
+    } else {
+        resNum2000Banknote = availNum2000Banknote;
+        int delta = needNum2000Banknote - availNum2000Banknote;
+        while (delta) {
+            needNum1000Banknote += 2;
+            --delta;
+        }
+    }
+    int resNum1000Banknote = 0;
+    if (availNum1000Banknote >= needNum1000Banknote) {
+        resNum1000Banknote = needNum1000Banknote;
+    } else {
+        resNum1000Banknote = availNum1000Banknote;
+        int delta = needNum1000Banknote - availNum1000Banknote;
+        while (delta) {
+            needNum500Banknote += 2;
+            --delta;
+        }
+    }
+    int resNum500Banknote = 0;
+    if (availNum500Banknote >= needNum500Banknote) {
+        resNum500Banknote = needNum500Banknote;
+    } else {
+        resNum500Banknote = availNum500Banknote;
+        int delta = needNum500Banknote - availNum500Banknote;
+        while (delta) {
+            needNum100Banknote += 5;
+            --delta;
+        }
+    }
+    int resNum100Banknote = needNum100Banknote;
 
     bool checker = true;
     do {
-        if (!checkAvailability(bankArray, 5000, num5000Banknote)) {
+        if (resNum5000Banknote > availNum5000Banknote) {
             checker = false;
             break;
         }
-        if (!checkAvailability(bankArray, 2000, num2000Banknote)) {
+        if (resNum2000Banknote > availNum2000Banknote) {
             checker = false;
             break;
         }
-        if (!checkAvailability(bankArray, 1000, num1000Banknote)) {
+        if (resNum1000Banknote > availNum1000Banknote) {
             checker = false;
             break;
         }
-        if (!checkAvailability(bankArray, 500, num500Banknote)) {
+        if (resNum500Banknote > availNum500Banknote) {
             checker = false;
             break;
         }
-        if (!checkAvailability(bankArray, 100, num100Banknote)) {
+        if (resNum100Banknote > availNum100Banknote) {
             checker = false;
             break;
         }
@@ -150,12 +207,14 @@ void giveBanknotes (int freeSpiceATM)
         std::cout << "There are no such banknotes in the right quantity" << std::endl;
         return;
     } else {
-        giveNumOfBanknotes (bankArray, 5000, num5000Banknote);
-        giveNumOfBanknotes (bankArray, 2000, num2000Banknote);
-        giveNumOfBanknotes (bankArray, 1000, num1000Banknote);
-        giveNumOfBanknotes (bankArray, 500, num500Banknote);
-        giveNumOfBanknotes (bankArray, 100, num100Banknote);
-        std::cout << "The sum of money " << sum << " was issued" << std::endl;
+        giveNumOfBanknotes (bankArray, 5000, resNum5000Banknote);
+        giveNumOfBanknotes (bankArray, 2000, resNum2000Banknote);
+        giveNumOfBanknotes (bankArray, 1000, resNum1000Banknote);
+        giveNumOfBanknotes (bankArray, 500, resNum500Banknote);
+        giveNumOfBanknotes (bankArray, 100, resNum100Banknote);
+        int resSum = 5000 * resNum5000Banknote + 2000 * resNum2000Banknote + 1000 * resNum1000Banknote +
+                                                            500 * resNum500Banknote + 100 * resNum100Banknote;
+        std::cout << "The sum of money " << resSum << " was issued" << std::endl;
     }
 
     std::ofstream bankFileOut ("bank.bin", std::ios_base::binary);
