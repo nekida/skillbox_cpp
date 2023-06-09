@@ -43,6 +43,17 @@ void addBanknotes (int freeSpiceATM)
     bankFileIn.read (reinterpret_cast<char*>(bankArray.data()), sizeof(int) * size);
     bankFileIn.close ();
 
+    if (freeSpiceATM != 0) {
+        for (size_t i = 0; i < size - 1; i++) {
+            for (size_t j = i + 1; j < size; j++) {
+                if (bankArray[i] == 0 && bankArray[j] != 0) {
+                    bankArray[i] = bankArray[j];
+                    bankArray[j] = 0;
+                }
+            }
+        }
+    }
+
     int startPos = size - freeSpiceATM;
     while (freeSpiceATM > 0) {
         int arrayBanknotes[] = {100, 500, 1000, 2000, 5000};
@@ -67,27 +78,38 @@ void addBanknotes (int freeSpiceATM)
     bankFileOut.close ();
 }
 
-int numAvailability (std::vector<int>& v, int valBanknote)
+bool checkAvailability (std::vector<int>& v, int sum)
 {
-    int cnt = 0;
     for (size_t i = 0; i < v.size(); i++) {
-        if (v[i] == valBanknote)
-            cnt++;
+        if (sum - v[i] < 0)
+            continue;
+        else if (sum == 0)
+            break;
+        else if (v[i] != 0)
+            sum -= v[i];
     }
-    return cnt;
+    return sum == 0;
 }
 
-void giveNumOfBanknotes (std::vector<int>& v, int valBanknote, int numBanknote)
+int giveAmount (std::vector<int>& v, int sum)
 {
-    for (size_t i = 0; i < v.size() && numBanknote; i++) {
-        if (v[i] == valBanknote) {
+    int result = 0;
+    for (size_t i = 0; i < v.size(); i++) {
+        if (sum - v[i] < 0)
+            continue;
+        else if (sum == 0)
+            break;
+        else if (v[i] != 0) {
+            sum -= v[i];
+            std::cout << "A banknote has been issued: " << v[i] << std::endl;
+            result += v[i];
             v[i] = 0;
-            numBanknote--;
         }
     }
+    return result;
 }
 
-void giveBanknotes (int freeSpiceATM)
+void giveBanknotes ()
 {
     std::cout << "Specify the amount to be issued with an accuracy of 100 rubles" << std::endl;
     int sum;
@@ -107,105 +129,12 @@ void giveBanknotes (int freeSpiceATM)
     bankFileIn.read (reinterpret_cast<char*>(bankArray.data()), sizeof(int) * bankArray.size());
     bankFileIn.close ();
 
-    int needNum5000Banknote = sum / 5000;
-    sum %= 5000;
-    int needNum2000Banknote = sum / 2000;
-    sum %= 2000;
-    int needNum1000Banknote = sum / 1000;
-    sum %= 1000;
-    int needNum500Banknote = sum / 500;
-    sum %= 500;
-    int needNum100Banknote = sum / 100;
-
-    int availNum5000Banknote = numAvailability (bankArray, 5000);
-    int availNum2000Banknote = numAvailability (bankArray, 2000);
-    int availNum1000Banknote = numAvailability (bankArray, 1000);
-    int availNum500Banknote = numAvailability (bankArray, 500);
-    int availNum100Banknote = numAvailability (bankArray, 100);
-
-    int resNum5000Banknote = 0;
-    if (availNum5000Banknote >= needNum5000Banknote) {
-        resNum5000Banknote = needNum5000Banknote;
-    } else {
-        resNum5000Banknote = availNum5000Banknote;
-        int delta = needNum5000Banknote - availNum5000Banknote;
-        while (delta) {
-            needNum2000Banknote += 2;
-            needNum1000Banknote += 1;
-            --delta;
-        }
-    }
-    int resNum2000Banknote = 0;
-    if (availNum2000Banknote >= needNum2000Banknote) {
-        resNum2000Banknote = needNum2000Banknote;
-    } else {
-        resNum2000Banknote = availNum2000Banknote;
-        int delta = needNum2000Banknote - availNum2000Banknote;
-        while (delta) {
-            needNum1000Banknote += 2;
-            --delta;
-        }
-    }
-    int resNum1000Banknote = 0;
-    if (availNum1000Banknote >= needNum1000Banknote) {
-        resNum1000Banknote = needNum1000Banknote;
-    } else {
-        resNum1000Banknote = availNum1000Banknote;
-        int delta = needNum1000Banknote - availNum1000Banknote;
-        while (delta) {
-            needNum500Banknote += 2;
-            --delta;
-        }
-    }
-    int resNum500Banknote = 0;
-    if (availNum500Banknote >= needNum500Banknote) {
-        resNum500Banknote = needNum500Banknote;
-    } else {
-        resNum500Banknote = availNum500Banknote;
-        int delta = needNum500Banknote - availNum500Banknote;
-        while (delta) {
-            needNum100Banknote += 5;
-            --delta;
-        }
-    }
-    int resNum100Banknote = needNum100Banknote;
-
-    bool checker = true;
-    do {
-        if (resNum5000Banknote > availNum5000Banknote) {
-            checker = false;
-            break;
-        }
-        if (resNum2000Banknote > availNum2000Banknote) {
-            checker = false;
-            break;
-        }
-        if (resNum1000Banknote > availNum1000Banknote) {
-            checker = false;
-            break;
-        }
-        if (resNum500Banknote > availNum500Banknote) {
-            checker = false;
-            break;
-        }
-        if (resNum100Banknote > availNum100Banknote) {
-            checker = false;
-            break;
-        }
-    } while (false);
-    if (!checker) {
-        std::cout << "There are no such banknotes in the right quantity" << std::endl;
-        return;
-    } else {
-        giveNumOfBanknotes (bankArray, 5000, resNum5000Banknote);
-        giveNumOfBanknotes (bankArray, 2000, resNum2000Banknote);
-        giveNumOfBanknotes (bankArray, 1000, resNum1000Banknote);
-        giveNumOfBanknotes (bankArray, 500, resNum500Banknote);
-        giveNumOfBanknotes (bankArray, 100, resNum100Banknote);
-        int resSum = 5000 * resNum5000Banknote + 2000 * resNum2000Banknote + 1000 * resNum1000Banknote +
-                                                            500 * resNum500Banknote + 100 * resNum100Banknote;
+    if (checkAvailability (bankArray, sum)) {
+        int resSum = giveAmount (bankArray, sum);
         std::cout << "The sum of money " << resSum << " was issued" << std::endl;
     }
+    else
+        std::cout << "There are no such banknotes in the right quantity" << std::endl;
 
     std::ofstream bankFileOut ("bank.bin", std::ios_base::binary);
     if (!bankFileOut.is_open()) {
@@ -237,7 +166,7 @@ int main ()
         else if (free == fullATM)
             std::cout << "There are no banknotes in the ATM" << std::endl;
         else
-            giveBanknotes(free);
+            giveBanknotes();
     }
 
     return 0;
