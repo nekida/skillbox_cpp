@@ -3,16 +3,17 @@
 #include <string>
 #include <vector>
 
-struct person {
+struct Person {
     std::string firstName;
     std::string lastName;
     std::string date;
     unsigned int sum;
 };
 
-bool openFile (std::ifstream& file)
+template <typename TypeStream>
+bool openFile (TypeStream& file)
 {
-    file.open ("sheet.bin", std::ios_base::binary);
+    file.open ("sheet.bin", std::ios_base::binary | std::ofstream::app);
     if (!file.is_open()) {
         std::cout << "Error open file sheet.bin" << std::endl;
         return false;
@@ -25,11 +26,35 @@ void commandList ()
     std::ifstream sheet;
     if (!openFile (sheet))
         return;
-    std::vector<person> persons(1);
 
-    while (!sheet.eof() && persons.back().firstName != "") {
-        
+    std::vector<Person> persons;
+    while (!sheet.eof()) {
+        Person person;
+        sheet >> person.firstName;
+        if (sheet.eof())
+            break;
+        sheet >> person.lastName >> person.date >> person.sum;
+        persons.push_back(person);
     }
+
+    sheet.close ();
+
+    for (size_t i = 0; i < persons.size(); ++i)
+        std::cout << persons[i].firstName << ' ' << persons[i].lastName << ' ' << persons[i].date << ' ' << persons[i].sum << std::endl;
+}
+
+void commandAdd ()
+{
+    Person person;
+
+    std::cout << "Enter first name, last name, date (dd.mm.yyyy) and summary:" << std::endl;
+    std::cin >> person.firstName >> person.lastName >> person.date >> person.sum;
+
+    std::ofstream sheet;
+    if (!openFile (sheet))
+        return;
+
+    sheet << person.firstName << ' ' << person.lastName << ' ' << person.date << ' ' << person.sum << std::endl;
 
     sheet.close ();
 }
@@ -43,7 +68,7 @@ int main ()
     if (command == "list") {
         commandList ();
     } else if (command == "add") {
-
+        commandAdd();
     } else
         std::cout << "Unsupported command" << std::endl;
 
