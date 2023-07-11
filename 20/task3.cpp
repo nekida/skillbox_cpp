@@ -1,76 +1,44 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
-
-struct Person {
-    std::string firstName;
-    std::string lastName;
-    std::string date;
-    unsigned int sum;
-};
-
-template <typename TypeStream>
-bool openFile (TypeStream& file)
-{
-    file.open ("sheet.bin", std::ios_base::binary | std::ofstream::app);
-    if (!file.is_open()) {
-        std::cout << "Error open file sheet.bin" << std::endl;
-        return false;
-    }
-    return true;
-}
-
-void commandList ()
-{
-    std::ifstream sheet;
-    if (!openFile (sheet))
-        return;
-
-    std::vector<Person> persons;
-    while (!sheet.eof()) {
-        Person person;
-        sheet >> person.firstName;
-        if (sheet.eof())
-            break;
-        sheet >> person.lastName >> person.date >> person.sum;
-        persons.push_back(person);
-    }
-
-    sheet.close ();
-
-    for (size_t i = 0; i < persons.size(); ++i)
-        std::cout << persons[i].firstName << ' ' << persons[i].lastName << ' ' << persons[i].date << ' ' << persons[i].sum << std::endl;
-}
-
-void commandAdd ()
-{
-    Person person;
-
-    std::cout << "Enter first name, last name, date (dd.mm.yyyy) and summary:" << std::endl;
-    std::cin >> person.firstName >> person.lastName >> person.date >> person.sum;
-
-    std::ofstream sheet;
-    if (!openFile (sheet))
-        return;
-
-    sheet << person.firstName << ' ' << person.lastName << ' ' << person.date << ' ' << person.sum << std::endl;
-
-    sheet.close ();
-}
 
 int main ()
 {
-    std::cout << "Enter the command (list/add):" << std::endl;
-    std::string command;
-    std::cin >> command;
+    bool isFind = true;
+    int fishCounter = 0;
+    while (isFind) {
+        std::cout << "Enter the type of fish you want to catch" << std::endl;
+        std::string catchFish;
+        std::cin >> catchFish;
 
-    if (command == "list") {
-        commandList ();
-    } else if (command == "add") {
-        commandAdd();
-    } else
-        std::cout << "Unsupported command" << std::endl;
+        std::ifstream fileIn ("river.txt");
+        if (!fileIn.is_open()) {
+            std::cout << "Error open file river.txt" << std::endl;
+            return 0;
+        }
+
+        int tmp = fishCounter;
+        while (!fileIn.eof()) {
+            std::string riverFish;
+            fileIn >> riverFish;
+            if (catchFish == riverFish) {
+                std::ofstream fileOut ("basket.txt", std::ofstream::app);
+                if (!fileOut.is_open()) {
+                    std::cout << "Error open file basket.txt" << std::endl;
+                    return 0;
+                }
+                fileOut << riverFish << std::endl;
+                fishCounter++;
+                fileOut.close ();
+            }
+            else
+                continue;
+
+        }
+        isFind = tmp != fishCounter;
+        fileIn.close();
+    }
+    std::cout << "Fish were caught for the current catch " << fishCounter << std::endl;
 
     return 0;
 }
