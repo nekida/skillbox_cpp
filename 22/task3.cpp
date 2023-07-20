@@ -4,15 +4,23 @@
 
 bool isAnagram (std::map<std::string, std::string>& strings)
 {
+    bool result = true;
     auto& strKey = strings.begin()->first;
     auto& strVal = strings.begin()->second;
     for (size_t i = 0; i < strKey.length(); ++i) {
+        bool found = false;
         for (size_t j = 0; j < strVal.length(); ++j) {
-            if (strKey[i] != strVal[j])
-                return false;
+            if (strKey[i] == strVal[j]) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            result = false;
+            break;
         }
     }
-    return true;
+    return result;
 }
 
 int main ()
