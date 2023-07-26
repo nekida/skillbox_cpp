@@ -15,10 +15,22 @@ struct Task {
     std::time_t endTime;
 };
 
-unsigned int getTimeInHours (const std::time_t& startTime, const std::time_t& endTime)
+struct Time {
+    int hours;
+    int minutes;
+    int seconds;
+};
+
+Time getTimeInHours (const std::time_t& startTime, const std::time_t& endTime)
 {
-    const std::time_t delta = endTime - startTime;
-    return (delta > 3600) ? delta / 3600 : 0;
+    Time retval;
+    std::time_t delta = endTime - startTime;
+    retval.hours = (delta > 3600) ? delta / 3600 : 0;
+    delta %= 3600;
+    retval.minutes = (delta > 60) ? delta / 60 : 0;
+    delta %= 60;
+    retval.seconds = delta;
+    return retval;
 }
 
 int main ()
@@ -53,8 +65,10 @@ int main ()
             } else {
                 for (const auto& task : tasks) {
                     if (task.status == completed) {
-                        std::cout << "> Name of complete task: " << task.name << ". Execution time: " <<
-                                    getTimeInHours(task.beginTime, task.endTime) << " hours" << std::endl;
+                        Time time = getTimeInHours(task.beginTime, task.endTime);
+                        std::cout << "> Name of complete task: " << task.name << ". Execution time: "
+                                << time.hours << " hours " << time.minutes << " minutes " << time.seconds
+                                        << " seconds" << std::endl;
                     } else if (task.status == running)
                         std::cout << "> Name of running task: " << task.name << std::endl;
                 }
