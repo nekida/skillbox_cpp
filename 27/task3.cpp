@@ -2,18 +2,16 @@
 #include <string>
 #include <random>
 
+int getRandomInRange (const int min, const int max)
+{
+    return min + (rand() % (max - min + 1));
+}
+
 class Person {
     std::string name;
 
 public:
     std::string& getName() { return name; }
-};
-
-class CEO : public Person {
-public:
-    void setCommand(class Manager& manager, int command) {
-        manager.setCommand(command);
-    }
 };
 
 class Worker : public Person {
@@ -25,14 +23,32 @@ class Manager : public Person {
 
     int command = 0;
 
+    int getNumTasks(int num) {
+        std::srand(serialNumber + command);
+        return rand() % (num + 1);
+    }
 public:
     void setSerialNumber(int inSerialNumber) { serialNumber = inSerialNumber; }
 
-    void setCommand(int inCommand) { command = inCommand; }
+    void setCommandFromCEO(int inCommand) {
+        command = inCommand;
+        std::cout << "Manager " << getName()<< " started to complete the task " << command << std::endl;
+    }
 
-    int getNumTasks(int inNumWorkers) {
-        std::srand(serialNumber + command);
-        return rand() % (inNumWorkers + 1);
+    void setCommandToWorker(int inNumWorkers, Worker* workers) {
+        int numTasks = getNumTasks(inNumWorkers);
+        if (numTasks > inNumWorkers)
+            numTasks = inNumWorkers;
+        for (int i = 0; i < numTasks; ++i) {
+            std::cout << "Worker " << workers[i].getName() << " started to complete the task " << command << std::endl;
+        }
+    }
+};
+
+class CEO : public Person {
+public:
+    void setCommand(class Manager& manager, int command) {
+        manager.setCommandFromCEO(command);
     }
 };
 
@@ -41,9 +57,9 @@ class Band {
 
     Worker *workers = nullptr;
 
-    int numWorkers = 0;
+    int numWorkers = 1;
 
-    int numTasks = 0;
+    int numTasks = 1;
 
 public:
     void setNumWorkers(int inNumWorkers)
@@ -101,6 +117,15 @@ int main ()
         std::cout << "Enter name of manager in bands " << i << std::endl;
         std::cin >> company.getBands()[i].getManager().getName();
         company.getBands()[i].getManager().setSerialNumber(i + 1);
+    }
+
+    std::cout << "You is CEO. Let's start command" << std::endl;
+    for (int i = 0; i < company.getNumBands(); ++i) {
+        std::cout << "Enter command for manager from band " << i << std::endl;
+        int command;
+        std::cin >> command;
+        company.getCEO().setCommand(company.getBands()[i].getManager(), command);
+        company.getBands()[i].getManager().setCommandToWorker(company.getBands()[i].getNumWorkers(), company.getBands()[i].getWorkers());
     }
 
     return 0;
