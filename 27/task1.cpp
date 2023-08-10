@@ -9,26 +9,60 @@ int getRandomInRange (const int min, const int max)
 }
 
 class Branch {
-    Branch** parent = nullptr;
-    Branch** child = nullptr;
+
     std::string nameElf = "";
 
+    int numBigBranch = 0;
+
+    int numMidBranch = 0;
+
 public:
+    Branch* parent = nullptr;
+
+    Branch* child = nullptr;
+
     Branch()
     {
         srand(time(NULL));
-        int numBigBranch = getRandomInRange(3, 5);
-        child = new Branch * [numBigBranch];
-        for (int i = 0; i < numBigBranch; ++i) {
-            child[i]->parent = &this;
-            child[i]->child = nullptr;
-        }
+        numBigBranch = getRandomInRange(3, 5);
+        numMidBranch = getRandomInRange(2, 3);
     }
+
+    int getNumBigBranch() { return numBigBranch; }
+
+    int getNumMidBranch() { return numMidBranch; }
+
+    std::string getNameOfElf() { return nameElf; }
+
+    void setNameOfElf (std::string inName) { nameElf = inName; }
 };
 
 int main ()
 {
-    Branch villageOfElfs;
+    Branch villageOfElfs[5];
+    for (int i = 0; i < 5; i++) {
+        int numBigBranch = villageOfElfs[i].getNumBigBranch();
+        villageOfElfs[i].child = new Branch [numBigBranch];
+        villageOfElfs[i].parent = nullptr;
+        for (int j = 0; j < numBigBranch; ++j) {
+            int numMidBranch = villageOfElfs[i].getNumMidBranch();
+            villageOfElfs[i].child[j].child = new Branch [numMidBranch];
+            villageOfElfs[i].child[j].parent = &villageOfElfs[i];
+            std::cout << "Enter the name of the elf living on " << j << " large branch of " << i << " tree" << std::endl;
+            std::string name = "";
+            std::cin >> name;
+            if (name == "none" || name == "None") name = "";
+            villageOfElfs[i].child[j].setNameOfElf(name);
+            for (int k = 0; k < numMidBranch; ++k) {
+                villageOfElfs[i].child[j].child[k].child = nullptr;
+                villageOfElfs[i].child[j].child[k].parent = &villageOfElfs[i].child[j];
+                std::cout << "Enter the name of the elf living on " << k << " middle branch of " << j << " large branch of " << i << " tree" << std::endl;
+                std::cin >> name;
+                if (name == "none" || name == "None") name = "";
+                villageOfElfs[i].child[j].child[k].setNameOfElf(name);
+            }
+        }
+    }
 
     return 0;
 }
