@@ -5,6 +5,7 @@
 
 int getRandomInRange (const int min, const int max)
 {
+    srand(time(NULL));
     return min + (rand() % (max - min + 1));
 }
 
@@ -23,7 +24,6 @@ public:
 
     Branch()
     {
-        srand(time(NULL));
         numBigBranch = getRandomInRange(3, 5);
         numMidBranch = getRandomInRange(2, 3);
     }
@@ -48,7 +48,7 @@ int main ()
             int numMidBranch = villageOfElfs[i].getNumMidBranch();
             villageOfElfs[i].child[j].child = new Branch [numMidBranch];
             villageOfElfs[i].child[j].parent = &villageOfElfs[i];
-            std::cout << "Enter the name of the elf living on " << j << " large branch of " << i << " tree" << std::endl;
+            std::cout << "Enter the name of the elf living on " << j + 1 << " large branch of " << i + 1 << " tree" << std::endl;
             std::string name = "";
             std::cin >> name;
             if (name == "none" || name == "None") name = "";
@@ -56,7 +56,7 @@ int main ()
             for (int k = 0; k < numMidBranch; ++k) {
                 villageOfElfs[i].child[j].child[k].child = nullptr;
                 villageOfElfs[i].child[j].child[k].parent = &villageOfElfs[i].child[j];
-                std::cout << "Enter the name of the elf living on " << k << " middle branch of " << j << " large branch of " << i << " tree" << std::endl;
+                std::cout << "Enter the name of the elf living on " << k + 1 << " middle branch of " << j + 1 << " large branch of " << i + 1<< " tree" << std::endl;
                 std::cin >> name;
                 if (name == "none" || name == "None") name = "";
                 villageOfElfs[i].child[j].child[k].setNameOfElf(name);
