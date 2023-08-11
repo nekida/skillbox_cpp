@@ -48,7 +48,6 @@ public:
                 if (inName == child[i].getNameOfElf())
                     return &child[i];
             }
-            child->getBranchWithElf(inName);
         }
         return nullptr;
     }
