@@ -17,7 +17,6 @@ struct Coordinates {
 };
 
 class Figure {
-public:
     std::string name = "";
 
     Coordinates coordinates;
@@ -28,13 +27,11 @@ public:
         "None", "Red", "Blue", "Green", "Pink"
     };
 
-    void init (std::string& const inName, Coordinates& inCoordinates, Color inColor)
-    {
-        name = inName;
-        coordinates.centreX = inCoordinates.centreX;
-        coordinates.centreY = inCoordinates.centreY;
-        color = inColor;
-    }
+public:
+    Figure(std::string& inName, Coordinates& inCoordinates, Color inColor)
+        : name(inName), coordinates(inCoordinates), color(inColor) {}
+
+    std::string getName() const { return name; }
 
     Coordinates getCoordinates() const { return coordinates; }
 
@@ -60,6 +57,9 @@ public:
 
 class Circle : public Figure {
 public:
+    Circle(std::string& inName, Coordinates& inCoordinates, Color inColor)
+        : Figure(inName, inCoordinates, inColor) {}
+
     double calcArea()
     {
         return fabs(getCoordinates().centreX) * 4 * atan(1);
@@ -68,6 +68,9 @@ public:
 
 class Triangle : public Figure {
 public:
+    Triangle(std::string& inName, Coordinates& inCoordinates, Color inColor)
+        : Figure(inName, inCoordinates, inColor) {}
+
     double calcArea()
     {
         return (getCoordinates().centreX * 4 * std::sqrt(3)) / 4;
@@ -76,6 +79,9 @@ public:
 
 class Square : public Figure {
 public:
+    Square(std::string& inName, Coordinates& inCoordinates, Color inColor)
+        : Figure(inName, inCoordinates, inColor) {}
+
     double calcArea()
     {
         return getCoordinates().centreX * 4;
@@ -84,6 +90,9 @@ public:
 
 class Rectangle : public Figure {
 public:
+    Rectangle(std::string& inName, Coordinates& inCoordinates, Color inColor)
+        : Figure(inName, inCoordinates, inColor) {}
+
     double calcArea()
     {
         return getCoordinates().centreX * 2 * getCoordinates().centreY * 2;
@@ -97,36 +106,32 @@ int main ()
     std::cin >> cmd;
     if (cmd == "circle") {
         Coordinates coor = { 4, 4 };
-        Circle circle;
-        circle.init(cmd, coor, Color::Red);
-        std::cout << "Name: " << circle.name << std::endl;
+        Circle circle(cmd, coor, Color::Red);
+        std::cout << "Name: " << circle.getName() << std::endl;
         std::cout << "Color: " << circle.getColor() << std::endl;
         std::cout << "Area: " << circle.calcArea() << std::endl;
         circle.printRectangle();
         std::cout << std::endl;
     } else if (cmd == "triangle") {
         Coordinates coor = { 4, 2 };
-        Triangle triangle;
-        triangle.init(cmd, coor, Color::Blue);
-        std::cout << "Name: " << triangle.name << std::endl;
+        Triangle triangle(cmd, coor, Color::Blue);
+        std::cout << "Name: " << triangle.getName() << std::endl;
         std::cout << "Color: " << triangle.getColor() << std::endl;
         std::cout << "Area: " << triangle.calcArea() << std::endl;
         triangle.printRectangle();
         std::cout << std::endl;
     } else if (cmd == "square") {
         Coordinates coor = { 4, 4 };
-        Square square;
-        square.init(cmd, coor, Color::Green);
-        std::cout << "Name: " << square.name << std::endl;
+        Square square(cmd, coor, Color::Green);
+        std::cout << "Name: " << square.getName() << std::endl;
         std::cout << "Color: " << square.getColor() << std::endl;
         std::cout << "Area: " << square.calcArea() << std::endl;
         square.printRectangle();
         std::cout << std::endl;
     } else if (cmd == "rectangle") {
         Coordinates coor = { 4, 8 };
-        Rectangle rectangle;
-        rectangle.init(cmd, coor, Color::Green);
-        std::cout << "Name: " << rectangle.name << std::endl;
+        Rectangle rectangle(cmd, coor, Color::Green);
+        std::cout << "Name: " << rectangle.getName() << std::endl;
         std::cout << "Color: " << rectangle.getColor() << std::endl;
         std::cout << "Area: " << rectangle.calcArea() << std::endl;
         rectangle.printRectangle();
