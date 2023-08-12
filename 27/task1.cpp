@@ -2,6 +2,9 @@
 #include <string>
 #include <random>
 #include <assert.h>
+#include <vector>
+
+static constexpr int numOfTree = 1;
 
 int getRandomInRange (const int min, const int max)
 {
@@ -41,33 +44,44 @@ public:
             for (int i = 0; i < getNumBigBranch(); ++i) {
                 if (inName == child[i].getNameOfElf())
                     return &child[i];
-            }
-            child->getBranchWithElf(inName);
-        } else if (parent != nullptr && child != nullptr) {
-            for (int i = 0; i < getNumMidBranch(); ++i) {
-                if (inName == child[i].getNameOfElf())
-                    return &child[i];
+                else {
+                    for (int j = 0; j < getNumMidBranch(); ++j) {
+                        if (inName == child[i].child[j].getNameOfElf())
+                            return &child[i].child[j];
+                    }
+                }
             }
         }
         return nullptr;
     }
 };
 
-int getNumNeighboursOnBigBranch(Branch* inBranch)
+std::vector<std::string> getNameNeighboursOnBigBranch(Branch* inBranch, std::string inName)
 {
-    int numNeighbours = 0;
-    if (inBranch->parent != nullptr && inBranch->child != nullptr) {
-        for (int i = 0; i < inBranch->getNumMidBranch(); ++i) {
-            if (inBranch->child[i].getNameOfElf() != "")
-                numNeighbours++;
-        }
+    std::vector<std::string> namesOfNeighbours;
+    Branch* branch = nullptr;
+    if (inBranch->parent != nullptr && inBranch->child != nullptr)
+        branch = inBranch->child;
+    else if (inBranch->parent != nullptr && inBranch->child == nullptr) {
+        std::string nameOfElfOnBigBranch = inBranch->parent->getNameOfElf();
+        if (nameOfElfOnBigBranch != "" && nameOfElfOnBigBranch != "None" && nameOfElfOnBigBranch != "none")
+            namesOfNeighbours.push_back(nameOfElfOnBigBranch);
+        branch = inBranch->parent->child;
+    } else
+        return namesOfNeighbours;
+    int numBranch = branch->getNumMidBranch();
+    for (int i = 0; i < numBranch; ++i) {
+        std::string name = branch[i].getNameOfElf();
+        if (name != "" && name != inName && name != "None" && name != "none")
+            namesOfNeighbours.push_back(name);
     }
+    return namesOfNeighbours;
 }
 
 int main ()
 {
-    Branch villageOfElfs[5];
-    for (int i = 0; i < 5; i++) {
+    Branch villageOfElfs[numOfTree];
+    for (int i = 0; i < numOfTree; i++) {
         int numBigBranch = villageOfElfs[i].getNumBigBranch();
         villageOfElfs[i].child = new Branch [numBigBranch];
         villageOfElfs[i].parent = nullptr;
@@ -91,12 +105,22 @@ int main ()
         }
     }
 
+    std::cout << "Enter the name of the elf whose neighbors you want to find" << std::endl;
+    std::string searchName;
+    std::cin >> searchName;
     Branch* finded = nullptr;
-    for (int i = 0; i < 5; i++) {
-        finded = villageOfElfs[i].getBranchWithElf("Nikita");
+    for (int i = 0; i < numOfTree; i++) {
+        finded = villageOfElfs[i].getBranchWithElf(searchName);
         if (finded != nullptr)
             break;
     }
-
+    if (finded != nullptr) {
+        std::vector<std::string> namesOfNeighbours = getNameNeighboursOnBigBranch(finded, searchName);
+        std::cout << "Elf lives next to elves:" << std::endl;
+        for (const auto& name : namesOfNeighbours)
+            std::cout << name << std::endl;
+        std::cout << "Total neighbors:" << namesOfNeighbours.size() << std::endl;
+    } else
+        std::cout << "There was no elf with that name" << std::endl;
     return 0;
 }
