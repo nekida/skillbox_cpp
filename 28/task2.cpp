@@ -8,21 +8,15 @@
 std::mutex station_access;
 
 class Train {
-    size_t maxTime = 0;
-
-    size_t curTime = 0;
+    size_t time = 0;
 
     char name;
 
 public:
     Train(size_t time, char name)
-            : maxTime(time), name(name) {}
+            : time(time), name(name) {}
 
-    size_t getCurTime() const { return curTime; }
-
-    size_t getMaxTime() const { return maxTime; }
-
-    void incCurTime() { curTime++; }
+    size_t getTime() const { return time; }
 
     char getName() const { return name; }
 
@@ -31,9 +25,8 @@ public:
 
 void timeUpdate (Train& train)
 {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    train.incCurTime();
-    if (train.getCurTime() >= train.getMaxTime() && !train.isLeftStation) {
+    std::this_thread::sleep_for(std::chrono::seconds(train.getTime()));
+    if (!train.isLeftStation) {
         std::cout << "Train " << train.getName() << " waiting for free space the station" << std::endl;
         station_access.lock();
         std::cout << "Train " << train.getName() << " arrived at the station" << std::endl;
@@ -71,11 +64,12 @@ int main ()
     while(!isAllTrainsLeftStation) {
         isAllTrainsLeftStation = true;
 
-        for (int i = 0; i < numTrains; ++i)
-            thrs[i] = std::thread(timeUpdate, std::ref(trains[i]));
-
-        for (int i = 0; i < numTrains; ++i)
-            thrs[i].join();
+        for (int i = 0; i < numTrains; ++i) {
+            if (!trains[i].isLeftStation) {
+                thrs[i] = std::thread(timeUpdate, std::ref(trains[i]));
+                thrs[i].join();
+            }
+        }
 
         for (int i = 0; i < numTrains; ++i)
             isAllTrainsLeftStation &= trains[i].isLeftStation;
