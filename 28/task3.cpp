@@ -61,7 +61,7 @@ int main ()
 {
     const std::string menu[] = {"pizza", "soup", "steak", "salad", "sushi"};
     int numOrders = 1;
-    while (numOrders != 10) {
+    while (numOrders < 11) {
         Order order(menu[getRandomInRange(0, 4)], numOrders);
         std::thread online(onlineOrder, std::ref(order));
         online.join();
