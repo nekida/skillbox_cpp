@@ -31,16 +31,17 @@ int getRandomInRange (const int min, const int max)
 
 void delivery (Order& order)
 {
-    while(!isCookingCompleted)
+    while(!order.isCookingCompleted)
         ;
     std::cout << "Order number " << order.num << " " << order.getName() << " in delivery being processed" << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(30));
+    std::cout << "Order number " << order.num << " " << order.getName() << " delivered" << std::endl;
 }
 
 void cooking (Order& order)
 {
-    std::cout << "Cooking order number " << order.num << " " << order.getName() << " has begun" << std::endl;
     isCookingCompleted.lock();
+    std::cout << "Cooking order number " << order.num << " " << order.getName() << " has begun" << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(getRandomInRange(5, 15)));
     std::cout << "Cooking order number " << order.num << " " << order.getName() << " finished" << std::endl;
     order.isCookingCompleted = true;
@@ -52,6 +53,8 @@ void onlineOrder (Order& order)
     std::cout << "Order number " << order.num << " " << order.getName() << " being processed" << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(getRandomInRange(5, 10)));
     std::cout << "Order number " << order.num << " " << order.getName() << " is accepted" << std::endl;
+    std::thread cook(cooking, std::ref(order));
+    cook.detach();
 }
 
 int main ()
@@ -62,8 +65,6 @@ int main ()
         Order order(menu[getRandomInRange(0, 4)], numOrders);
         std::thread online(onlineOrder, std::ref(order));
         online.join();
-        std::thread cook(cooking, std::ref(order));
-        cook.detach();
         std::thread deliv(delivery, std::ref(order));
         deliv.join();
         numOrders++;
