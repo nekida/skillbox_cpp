@@ -10,24 +10,18 @@ std::mutex cookingMtx;
 std::mutex orderingMtx;
 std::mutex deliveringMtx;
 
-class Order {
-    std::string nameOfDish;
-
-    int num = 0;
-
-public:
-    Order(std::string name, int num) : nameOfDish(name), num(num) { }
-
-    std::string& getName() { return nameOfDish; }
-
-    size_t getNum() { return num; }
-
-    bool isOrdering = false;
-
-    bool isCooking = false;
-
-    bool isDelivering = false;
+struct Order {
+    size_t num;
+    std::string name;
+    bool isOrdering;
+    bool isCooking;
 };
+
+std::vector<Order> orders;
+
+std::string dish[] = {"пицца", "суп", "стейк", "салат", "суши"};
+
+int orderDelivedNum = 0;
 
 int getRandomInRange (const int min, const int max)
 {
@@ -35,51 +29,53 @@ int getRandomInRange (const int min, const int max)
     return min + (rand() % (max - min + 1));
 }
 
-void deliveryOrder (Order& order)
+void deliveryOrder ()
 {
-    while (!order.isCooking)
-        ;
     deliveringMtx.lock();
     std::this_thread::sleep_for(std::chrono::seconds(30));
-    std::cout << "Заказ номер " << order.getNum() << " " << order.getName() << " доставлен" << std::endl;
+    while (orders.empty() || !orders.front().isCooking)
+        ;
+    std::cout << "Заказ номер " << orders.front().num << " " << orders.front().name << " доставлен" << std::endl;
+    orders.erase(orders.begin());
+    orderDelivedNum++;
     deliveringMtx.unlock();
 }
 
-void cookingOrder (Order& order)
+void cookingOrder ()
 {
-    while (!order.isOrdering)
-        ;
-    std::this_thread::sleep_for(std::chrono::seconds(getRandomInRange(5, 15)));
-    std::cout << "Заказ номер " << order.getNum() << " " << order.getName() << " приготовлен" << std::endl;
     cookingMtx.lock();
-    order.isCooking = true;
+    std::this_thread::sleep_for(std::chrono::seconds(getRandomInRange(5, 15)));
+    while (orders.empty() || !orders.front().isOrdering || orders.front().isCooking)
+        ;
+    std::cout << "Заказ номер " << orders.front().num << " " << orders.front().name << " приготовлен" << std::endl;
+    orders.front().isCooking = true;
     cookingMtx.unlock();
 }
 
-void onlineOrder (Order& order)
+void onlineOrder (size_t numOrder)
 {
-    std::this_thread::sleep_for(std::chrono::seconds(getRandomInRange(5, 10)));
-    std::cout << "Заказ номер " << order.getNum() << " " << order.getName() << " оформлен" << std::endl;
     orderingMtx.lock();
-    order.isOrdering = true;
+    std::this_thread::sleep_for(std::chrono::seconds(getRandomInRange(5, 10)));
+    orders.push_back({numOrder, dish[getRandomInRange(0, 4)], true, false});
+    std::cout << "Заказ номер " << orders.back().num << " " << orders.back().name << " оформлен" << std::endl;
     orderingMtx.unlock();
 }
 
 int main ()
 {
     setlocale(LC_ALL, "Russian");
-    const std::string dish[] = {"пицца", "суп", "стейк", "салат", "суши"};
-    int numOrders = 1;
-    while (numOrders < 11) {
-        Order order(dish[getRandomInRange(0, 4)], numOrders);
-        std::thread online(onlineOrder, std::ref(order));
-        std::thread cooking(cookingOrder, std::ref(order));
-        std::thread delivering(deliveryOrder, std::ref(order));
+        
+    for (int numOrders = 1; numOrders < 11; ++numOrders) {
+        std::thread online(onlineOrder, numOrders);
         online.join();
+        std::thread cooking(cookingOrder);
         cooking.detach();
-        delivering.join();
-        numOrders++;
+        std::thread delivering(deliveryOrder);
+        delivering.detach();
     }
+
+    while (orderDelivedNum != 10)
+        ;
 
     return 0;
 }
