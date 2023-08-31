@@ -30,11 +30,11 @@ class Circle : public Shape {
 public:
     Circle(double _radius) : radius(_radius) {}
 
-    double square() { return 3.14 * radius * radius; }
+    double square() override { return 3.14 * radius * radius; }
 
-    BoundingBoxDimensions dimensions() { return { radius * 2, radius * 2 }; }
+    BoundingBoxDimensions dimensions() override { return { radius * 2, radius * 2 }; }
 
-    std::string type() { return "Circle"; }
+    std::string type() override { return "Circle"; }
 };
 
 class Rectangle : public Shape {
@@ -45,11 +45,11 @@ class Rectangle : public Shape {
 public:
     Rectangle(double _a, double _b) : a(_a), b(_b) {}
 
-    double square() { return a * b; }
+    double square() override { return a * b; }
 
-    BoundingBoxDimensions dimensions() { return { a, b }; }
+    BoundingBoxDimensions dimensions() override { return { a, b }; }
 
-    std::string type() { return "Rectangle"; }
+    std::string type() override { return "Rectangle"; }
 };
 
 class Triangle : public Shape {
@@ -62,17 +62,17 @@ class Triangle : public Shape {
 public:
     Triangle(double _a, double _b, double _c) : a(_a), b(_b), c(_c) {}
 
-    double square() {
+    double square() override {
         double halfPerim = (a + b + c) / 2;
         return std::sqrt(halfPerim * (halfPerim - a) * (halfPerim - b) * (halfPerim - c));
     }
 
-    BoundingBoxDimensions dimensions() {
+    BoundingBoxDimensions dimensions() override {
         double d = 2 * (a * b * c) / (4 * square());
         return { d, d }; 
     }
 
-    std::string type() { return "Triangle"; }
+    std::string type() override { return "Triangle"; }
 };
 
 int main ()
