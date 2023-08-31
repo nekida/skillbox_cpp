@@ -59,12 +59,11 @@ class Triangle : public Shape {
 
     double c;
 
-    double halfPerim = (a + b + c) / 2;
-
 public:
     Triangle(double _a, double _b, double _c) : a(_a), b(_b), c(_c) {}
 
     double square() {
+        double halfPerim = (a + b + c) / 2;
         return std::sqrt(halfPerim * (halfPerim - a) * (halfPerim - b) * (halfPerim - c));
     }
 
