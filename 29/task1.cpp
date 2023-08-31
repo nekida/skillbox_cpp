@@ -7,19 +7,19 @@ public:
     virtual std::string getName() = 0;
 };
 
-class Swimming : virtual public Talent {
+class Swimming : public Talent {
 public:
-    std::string getName() { return "Swim"; }
+    std::string getName() override { return "Swim"; }
 };
 
-class Dancing : virtual public Talent {
+class Dancing : public Talent {
 public:
-    std::string getName() { return "Dance"; }
+    std::string getName() override { return "Dance"; }
 };
 
-class Counting : virtual public Talent {
+class Counting : public Talent {
 public:
-    std::string getName() { return "Count"; }
+    std::string getName() override { return "Count"; }
 };
 
 class Dog {
