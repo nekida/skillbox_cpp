@@ -42,30 +42,27 @@ public:
     }
 };
 
-namespace My {
-
-static size_t numLinks = 0;
-
 class shared_ptr_toy {
     Toy* ptrToy;
 
+    static inline size_t numLinks{}; // Так инициализируется нулем
+
 public:
-    shared_ptr_toy(std::string& name) {
+    shared_ptr_toy(std::string name) {
         ptrToy = new Toy(name);
         numLinks++;
     }
 
     shared_ptr_toy(const shared_ptr_toy& other) {
-        ptrToy = new Toy(*other.ptrToy);
+        ptrToy = new Toy(other.ptrToy->getName());
+        *ptrToy = *other.ptrToy;
         numLinks++;
     }
 
     shared_ptr_toy& operator=(const shared_ptr_toy& other) {
-        if (this == &other)
-            return *this;
-        if (ptrToy != nullptr)
-            delete ptrToy;
-        ptrToy = new Toy(*other.ptrToy);
+        delete ptrToy;
+        ptrToy = new Toy(other.ptrToy->getName());
+        *ptrToy = *other.ptrToy;
         numLinks++;
         return *this;
     }
@@ -81,20 +78,25 @@ public:
     }
 };
 
-}
-
-My::shared_ptr_toy* make_shared_toy (std::string name) // , Toy& toy)
+template <typename Arg>
+shared_ptr_toy* make_shared_toy (Arg& arg)
 {
-    if (name != "") {
-        My::shared_ptr_toy* ptrToy = new My::shared_ptr_toy(name);
-        return ptrToy;
-    }
+    return new shared_ptr_toy(arg);
 }
 
 int main ()
 {
-    std::string name = "Druzhok";
-    auto ptr = make_shared_toy("Druzhok");
-    std::cout << "Hello" << std::endl;
+    auto ball1 = make_shared_toy("Ball");
+    std::cout << ball1->count() << std::endl;
+
+    {
+        auto ball2 = make_shared_toy("Bone");
+        std::cout << ball2->count() << std::endl;
+    }
+    std::cout << ball1->count() << std::endl;
+
+    auto ball2 = make_shared_toy(*ball1);
+    std::cout << ball1->count() << std::endl;
+
     return 0;
 }
