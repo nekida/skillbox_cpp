@@ -16,7 +16,7 @@ public:
     }
 
     /* v Конструктор копирования */
-    Fraction (const Fraction &other) {
+    Fraction(const Fraction &other) {
         numerator = other.numerator;
         denominator = other.denominator;
     }
@@ -61,14 +61,15 @@ int main ()
     Fraction frac2(2, 5);
     Fraction frac5(0, 0);
 
-    /* v Тут сначала будет вызван перегруженный оператор сложения, а затем конструктор копирования */
-    Fraction frac3 = frac1 + frac2;
+    /* v Тут будет вызван конструктор копирования */
+    Fraction frac3(frac1);
     std::cout << frac3 << std::endl;
 
-    /* v Тут будет вызван перегруженный оператор сложения, конструктор копирования, оператор присваивания, конструктор копирования */
+    /* v Тут будет вызван перегруженный оператор сложения, конструктор по умолчанию, перегруженный оператор присваивания */
     frac4 = frac2 + frac3;
     std::cout << frac4 << std::endl;
 
+    /* v Тут вызовется перегруженный оператор присваивания */
     frac5 = frac3;
     std::cout << frac5 << std::endl;
 
