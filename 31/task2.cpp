@@ -59,13 +59,7 @@ public:
         numLinks++;
     }
 
-    shared_ptr_toy& operator=(const shared_ptr_toy& other) {
-        delete ptrToy;
-        ptrToy = new Toy(other.ptrToy->getName());
-        *ptrToy = *other.ptrToy;
-        numLinks++;
-        return *this;
-    }
+    shared_ptr_toy& operator=(const shared_ptr_toy& other);
 
     ~shared_ptr_toy() {
         numLinks--;
@@ -78,6 +72,17 @@ public:
     }
 };
 
+shared_ptr_toy& shared_ptr_toy::operator=(const shared_ptr_toy& other) {
+    if (ptrToy != other.ptrToy)
+        return *this;
+    if (ptrToy)
+        delete ptrToy;
+    ptrToy = new Toy(other.ptrToy->getName());
+    *ptrToy = *other.ptrToy;
+    numLinks++;
+    return *this;
+}
+
 template <typename Arg>
 shared_ptr_toy* make_shared_toy (Arg& arg)
 {
@@ -89,14 +94,16 @@ int main ()
     auto ball1 = make_shared_toy("Ball");
     std::cout << ball1->count() << std::endl;
 
-    {
-        auto ball2 = make_shared_toy("Bone");
-        std::cout << ball2->count() << std::endl;
-    }
+    auto ball2 = make_shared_toy("Ball");
+    std::cout << ball2->count() << std::endl;
+
+    ball2 = ball1;
+    std::cout << ball2->count() << std::endl;
+    ball2->~shared_ptr_toy();
     std::cout << ball1->count() << std::endl;
 
-    auto ball2 = make_shared_toy(*ball1);
-    std::cout << ball1->count() << std::endl;
+    auto ball3 = make_shared_toy(*ball1);
+    std::cout << ball3->count() << std::endl;
 
     return 0;
 }
