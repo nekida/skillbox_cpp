@@ -1,6 +1,4 @@
 #include <iostream>
-#include <string>
-#include <vector>
 
 static constexpr size_t sizeArray = 8;
 
