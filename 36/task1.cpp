@@ -15,13 +15,13 @@ class CicrcleDraw : public QWidget {
 
 public:
     CicrcleDraw(QWidget *parent) : QWidget(parent) {
-        redPixMap = QPixmap("/home/nekida/Projects/default/red.png");
-        greenPixMap = QPixmap("/home/nekida/Projects/default/green.png");
-        yellowPixMap = QPixmap("/home/nekida/Projects/default/yellow.png");
+        greenPixMap = QPixmap("green.png");
+        redPixMap = QPixmap("red.png");
+        yellowPixMap = QPixmap("yellow.png");
 
         currentPixMap = greenPixMap;
 
-        setFixedSize(200, 250);
+        // setFixedSize(200, 250);
     }
 
     QSize minimumSizeHint() const override {
@@ -30,9 +30,10 @@ public:
 
     void paintEvent(QPaintEvent *event) override {
         QPainter painter(this);
-        painter.drawPixmap(event->rect(), currentPixMap);
+        painter.drawPixmap(rect(), currentPixMap);
     }
 
+public slots:
     void setRed() {
         currentPixMap = redPixMap;
         update();
@@ -53,14 +54,13 @@ int main (int argc, char* argv[])
 {
     QApplication app(argc, argv);
     auto *window = new QWidget;
-    auto *layout = new QVBoxLayout;
+    auto *layout = new QVBoxLayout(window);
     auto *circle = new CicrcleDraw(window);
     auto *slider = new QSlider(Qt::Horizontal, window);
     window->setFixedSize(200, 250);
     layout->addWidget(circle);
     layout->addWidget(slider);
-    slider->setMinimum(0);
-    slider->setMaximum(99);
+    slider->setRange(0, 99);
     QObject::connect(slider, &QSlider::valueChanged, [slider, circle](int newValue){
         const auto value = slider->value();
         if (value >= 0 && value < 33)
